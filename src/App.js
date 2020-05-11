@@ -1,8 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+import useMachine from './useMachine';
+import RelationChainMachine from './fsm';
+
+window.DEV_ENV = 1;
+
 function App() {
+  const [state, send] = useMachine(RelationChainMachine);
+
+  useEffect(() => {
+    send({ type: 'LOAD', users: [1, 2, 3,], hasReceiveGift: false });
+    send({ type: 'AUTO_SELECT' });
+    // window.serviceSend = send;
+  }, [])
+
   return (
     <div className="App">
       <header className="App-header">
