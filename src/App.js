@@ -1,37 +1,64 @@
-import React, { useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
-
+import React, { useEffect, useReducer } from 'react';
+import { createMachine as Machine } from '@xstate/fsm';
 import useMachine from './useMachine';
-import RelationChainMachine from './fsm';
 
-window.DEV_ENV = 1;
+function fetchListData(id) {
+  const mockData = [
+    { title: 'apple', text: 'apple is fruit.' },
+    { title: 'beef', text: 'beef is meat!' },
+    { title: 'desktop', text: 'desktop is furniture' },
+  ];
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      resolve(mockData);
+    });
+  })
+}
+
+const appMachine = Machine({
+  initial: 'idle',
+  context: {
+    id: null,
+    theme: 'night',
+    list: []
+  },
+  states: {
+    idle: {
+      on: {
+        LOAD: 'loading'
+      }
+    },
+    loading: {
+      on: {
+        SUCCESS: 'loaded',
+        FAIL: 'failure'
+      }
+    },
+    loaded: {
+      type: 'final',
+    },
+    failure: {
+      type: 'final',
+    }
+  }
+});
+
+
+const AppContext = React.createContext(appMachine.config.context);
+
+function List() {
+
+}
+
+function Item() {
+
+}
 
 function App() {
-  const [state, send] = useMachine(RelationChainMachine);
-
-  useEffect(() => {
-    send({ type: 'LOAD', users: [1, 2, 3,], hasReceiveGift: false });
-    send({ type: 'AUTO_SELECT' });
-    // window.serviceSend = send;
-  }, [])
-
+  // const [state, send, service] = useMachine(appMachine);
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+
     </div>
   );
 }
