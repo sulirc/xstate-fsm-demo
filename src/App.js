@@ -1,6 +1,11 @@
-import React, { useEffect, useReducer } from 'react';
-import { createMachine as Machine } from '@xstate/fsm';
+import React, { useEffect, useReducer, useCallback, useContext } from 'react';
+import { createMachine as Machine, assign } from '@xstate/fsm';
 import useMachine from './useMachine';
+import './App.css';
+
+function getId() {
+  return Math.random().toString(16).slice(2, 10);
+}
 
 function fetchListData(id) {
   const mockData = [
@@ -10,8 +15,12 @@ function fetchListData(id) {
   ];
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      resolve(mockData);
-    });
+      if (Math.random() > 0.5) {
+        resolve(mockData.map(item => ({ ...item, id })));
+      } else {
+        reject('Network error! Please retry')
+      }
+    }, 3000);
   })
 }
 
@@ -20,18 +29,41 @@ const appMachine = Machine({
   context: {
     id: null,
     theme: 'night',
-    list: []
+    list: [],
+    timestamp: 0,
+    error: null
   },
   states: {
     idle: {
       on: {
-        LOAD: 'loading'
+        LOAD: {
+          target: 'loading',
+          actions: assign({
+            id: (_ctx, evt) => evt.id
+          })
+        }
       }
     },
     loading: {
       on: {
-        SUCCESS: 'loaded',
-        FAIL: 'failure'
+        SUCCESS: {
+          target: 'loaded',
+          actions: assign({
+            list: (_ctx, evt) => evt.listData
+          })
+        },
+        FAIL: {
+          target: 'failure', actions: assign({
+            list: () => [],
+            error: (_ctx, evt) => evt.error
+          })
+        },
+        PENDING: {
+          target: 'loading',
+          actions: assign({
+            timestamp: () => new Date().getTime()
+          })
+        }
       }
     },
     loaded: {
@@ -44,21 +76,52 @@ const appMachine = Machine({
 });
 
 
-const AppContext = React.createContext(appMachine.config.context);
-
-function List() {
-
+function List(props) {
+  return (
+    <div className="list">
+      <Item />
+    </div>
+  );
 }
 
-function Item() {
-
+function Item(props) {
+  return (
+    <div className="item">
+      item
+    </div>
+  )
 }
 
 function App() {
-  // const [state, send, service] = useMachine(appMachine);
+  const [state, send, service] = useMachine(appMachine);
+
+  useEffect(() => {
+    service.subscribe(currentState => {
+      if (currentState.changed) {
+        console.log(service.state.context);
+      }
+    });
+
+    send({ type: 'LOAD', id: getId() });
+
+    const loadingTimer = setInterval(() => {
+      send({ type: 'PENDING' });
+    }, 1000);
+
+    fetchListData().then((res) => {
+      send({ type: 'SUCCESS', listData: res });
+    }).catch(err => {
+      send({ type: 'FAIL', error: err });
+    }).finally(() => {
+      clearInterval(loadingTimer);
+    })
+
+  }, [send, service]);
+
   return (
     <div className="App">
-
+      {state.value}
+      <List />
     </div>
   );
 }
