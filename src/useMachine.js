@@ -47,7 +47,10 @@ export default function useMachine(machine) {
       service.historyStates = [];
       service.stop();
     };
-  }, []);
+  },
+    // eslint-disable-next-line
+    []
+  );
 
   return [state, service.send, service];
 }

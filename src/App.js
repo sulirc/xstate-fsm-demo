@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useContext, useCallback } from 'react';
 import { createMachine as Machine, assign } from '@xstate/fsm';
+import { classNames } from './utils';
 import useMachine from './useMachine';
 import './App.css';
 
@@ -20,7 +21,7 @@ function fetchListData() {
       } else {
         reject('Network error! Please retry')
       }
-    }, 3000);
+    }, 2000);
   })
 }
 
@@ -82,18 +83,23 @@ const AppContext = React.createContext({
 
 function useAppContext() {
   const [context, setContext] = useState(appMachine.config.context);
-  const setCurrentContext = useCallback(ctx => {
-    setContext(ctx);
-  }, [])
+  const setCurrentContext = useCallback(newContext => {
+    setContext({
+      ...context,
+      ...newContext
+    });
+  }, [context])
   return { context, setCurrentContext };
 }
 
 function List(props) {
   const { theme } = props;
-  const { list, id } = useContext(AppContext);
+  const { list } = useContext(AppContext);
   return (
-    <div className="list">
-      id: {id}
+    <div className={classNames('list', {
+      'theme-night': theme === 'night',
+      'theme-light': theme === 'light'
+    })} >
       {
         list.map(item => <Item key={item.id} {...item} />)
       }
@@ -104,8 +110,8 @@ function List(props) {
 function Item(props) {
   return (
     <div className="item">
-      <p>title: {props.title}</p>
-      <p>description: {props.desc}</p>
+      <p className="title">Title: {props.title}</p>
+      <p className="desc">Description: {props.desc}</p>
     </div>
   )
 }
@@ -141,11 +147,25 @@ function App() {
 
   }, [send, service, setCurrentContext]);
 
+
   return (
     <AppContext.Provider value={context}>
       <div className="App">
-        <List theme={context.theme} />
-        { state.matches('failure') && context.error }
+        <nav>
+          Current theme is {context.theme} <button onClick={() => {
+            console.log('theme switch')
+            if (context.theme === 'night') {
+              setCurrentContext({ theme: 'light' });
+            } else {
+              setCurrentContext({ theme: 'night' })
+            }
+          }}>Theme Switch</button>
+        </nav>
+
+        {state.matches('loading') && <p className="loading-tip">loading...</p> }
+        {state.matches('loaded') && <List theme={context.theme} />}
+        {state.matches('failure') && <p className="error-tip">{context.error}</p>}
+
       </div>
     </AppContext.Provider>
   );
