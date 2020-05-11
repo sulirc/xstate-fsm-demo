@@ -3,6 +3,11 @@
   font-size: 12px;
 }
 
+* {
+  margin: 0;
+  box-sizing: border-box;
+}
+
 nav {
   display: flex;
   justify-content: space-between;
@@ -46,8 +51,7 @@ button:active {
 
 .item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
   padding: .5rem;
 }
 
@@ -56,13 +60,14 @@ button:active {
 }
 
 .item > .title {
+  font-weight: bold;
   font-size: 14px;
 }
 
 .item > .desc {
   flex: 2;
-  margin-left: 1rem;
   font-size: 11px;
+  opacity: .8;
 }
 
 .loading-tip,
