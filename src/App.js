@@ -153,7 +153,6 @@ function App() {
         {state.matches('loading') && <p className="loading-tip">loading... (timestamp {context.timestamp})</p>}
         {state.matches('loaded') && <List theme={context.theme} />}
         {state.matches('failure') && <p className="error-tip">{context.error}</p>}
-
       </div>
     </AppContext.Provider>
   );
