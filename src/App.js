@@ -16,7 +16,7 @@ function fetchListData() {
   ];
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      if (Math.random() > 0.3) {
+      if (Math.random() > 0.01) {
         resolve(mockData.map(item => ({ ...item, id: getId() })));
       } else {
         reject('Network error! Please retry')
@@ -29,9 +29,9 @@ const appMachine = Machine({
   initial: 'idle',
   context: {
     id: null,
-    theme: 'night',
+    theme: 'light',
     list: [],
-    timestamp: 0,
+    timestamp: new Date().getTime(),
     error: null
   },
   states: {
@@ -132,7 +132,7 @@ function App() {
 
     const loadingTimer = setInterval(() => {
       send({ type: 'PENDING' });
-    }, 1000);
+    }, 100);
 
     fetchListData()
       .then((res) => {
@@ -162,7 +162,7 @@ function App() {
           }}>Theme Switch</button>
         </nav>
 
-        {state.matches('loading') && <p className="loading-tip">loading...</p> }
+        {state.matches('loading') && <p className="loading-tip">loading... (timestamp {context.timestamp})</p> }
         {state.matches('loaded') && <List theme={context.theme} />}
         {state.matches('failure') && <p className="error-tip">{context.error}</p>}
 

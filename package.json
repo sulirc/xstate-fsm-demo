@@ -9,8 +9,7 @@
     "@xstate/fsm": "^1.4.0",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
-    "redux": "^4.0.5"
+    "react-scripts": "3.4.1"
   },
   "scripts": {
     "start": "react-scripts start",
