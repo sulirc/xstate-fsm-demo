@@ -1,11 +1,11 @@
 import React, { useEffect, useContext } from 'react';
-import { createMachine as Machine, assign } from '@xstate/fsm';
+import { createMachine as Machine, assign, interpret } from '@xstate/fsm';
 import { classNames, getId, fetchListData } from './utils';
 import useMachine from './useMachine';
 import useAppContext from './useAppContext';
 import './App.css';
 
-const appMachine = Machine({
+export const appMachine = Machine({
   // 应用初始状态
   initial: 'idle',
   // 应用的上下文
@@ -69,6 +69,9 @@ const appMachine = Machine({
     }
   }
 });
+
+// test single service
+require('./singleService');
 
 // 声明初始上下文
 const AppContext = React.createContext({
@@ -157,3 +160,4 @@ function App() {
 }
 
 export default App;
+
