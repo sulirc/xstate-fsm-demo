@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from 'react';
-import { createMachine as Machine, assign, interpret } from '@xstate/fsm';
+import { createMachine as Machine, assign } from '@xstate/fsm';
 import { classNames, getId, fetchListData } from './utils';
 import useMachine from './useMachine';
 import useAppContext from './useAppContext';
