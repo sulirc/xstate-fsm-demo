@@ -1,7 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
-import FSM from './packages/fsm';
+import App from './playground/fsm/App'
+
+import './packages/fsm';
+
+
+import './playground/graph';
+
 import './index.css';
 
 ReactDOM.render(
