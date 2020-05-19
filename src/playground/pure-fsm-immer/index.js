@@ -37,11 +37,13 @@ const toggleMachine = createMachine({
   }
 });
 
-const toggleService = interpret(toggleMachine)
-  .onTransition((state) => {
-    console.log(state.context);
-  })
-  .start();
+const toggleService = interpret(toggleMachine);
+
+toggleService.subscribe((state) => {
+  console.log(state.context);
+});
+
+toggleService.start();
 
 toggleService.send('TOGGLE');
 // { count: 1, level: 0 }
