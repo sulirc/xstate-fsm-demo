@@ -44,6 +44,7 @@ toggleService.subscribe((state) => {
 });
 
 toggleService.start();
+// { count: 0, level: 0 }
 
 toggleService.send('TOGGLE');
 // { count: 1, level: 0 }
